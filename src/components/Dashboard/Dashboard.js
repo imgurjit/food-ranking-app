@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { userActions } from "../../actions";
 import { connect } from "react-redux";
 import Paper from "@material-ui/core/Paper";
@@ -8,20 +8,19 @@ import Tab from "@material-ui/core/Tab";
 import Container from "@material-ui/core/Container";
 import { UploadDish } from "./UploadDish";
 import { FavouriteDish } from "./FavouriteDish";
-import { dishActions } from "../../actions";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
     marginTop: theme.spacing(8),
     display: "flex",
     flexDirection: "column",
-    alignItems: "center"
+    alignItems: "center",
   },
   tabs: {
     width: "100%",
     background: "#80FFE8",
-    color: "black"
-  }
+    color: "black",
+  },
 }));
 
 function TabPanel(props) {
@@ -29,11 +28,13 @@ function TabPanel(props) {
 
   return (
     <div
+      style={{ width: "100%" }}
       role="tabpanel"
       hidden={value !== index}
       id={`vertical-tabpaneladsfsdf-${index}`}
       aria-labelledby={`vertical-tabadfdsf-${index}`}
-      {...other}>
+      {...other}
+    >
       {children}
     </div>
   );
@@ -47,14 +48,6 @@ function Dashboard(props) {
     setValue(newValue);
   };
 
-  useEffect(() => {
-    console.log("flsdhfk");
-    props.getDishes(
-      (res) => {},
-      (err) => {}
-    );
-  }, []);
-
   return (
     <Container component="main">
       <Paper className={classes.paper}>
@@ -63,7 +56,8 @@ function Dashboard(props) {
           value={value}
           indicatorColor="primary"
           onChange={handleChange}
-          variant="fullWidth">
+          variant="fullWidth"
+        >
           <Tab label="Upload Dish" />
           <Tab label="Favourite Dish" />
         </Tabs>
@@ -71,7 +65,11 @@ function Dashboard(props) {
           <UploadDish></UploadDish>
         </TabPanel>
         <TabPanel value={value} index={1}>
-          <FavouriteDish></FavouriteDish>
+          <FavouriteDish
+            cb={() => {
+              props.history.push("/result");
+            }}
+          ></FavouriteDish>
         </TabPanel>
       </Paper>
     </Container>
@@ -87,7 +85,6 @@ function mapState(state) {
 const actionCreators = {
   login: userActions.login,
   loginSuccessful: userActions.loginSuccessful,
-  getDishes: dishActions.getDishes
 };
 
 const connectedDashboardPage = connect(mapState, actionCreators)(Dashboard);

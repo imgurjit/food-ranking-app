@@ -2,27 +2,12 @@ import { dishesConstants } from "../constants";
 import { dishService } from "../services";
 
 export const dishActions = {
-  getDishes,
-  addDish
+  addDish,
+  deleteDish,
+  updateDishPoints,
 };
 
-function getDishes(success, failure) {
-  return (dispatch) => {
-    dishService.getDishes(
-      (res) => {
-        success(res);
-        dispatch({ type: dishesConstants.GET_DISHES, res });
-      },
-      (err) => {
-        failure(err);
-        dispatch({ type: dishesConstants.GET_DISHES });
-      }
-    );
-  };
-}
-
 function addDish(dishName, dishDesc, image, submittedBy, success, failure) {
-  console.log("ADD DISH");
   return (dispatch) => {
     dishService.addDish(
       dishName,
@@ -31,13 +16,35 @@ function addDish(dishName, dishDesc, image, submittedBy, success, failure) {
       submittedBy,
       (res) => {
         success(res);
-        let data = { name: dishName, submittedBy: submittedBy, description: dishDesc, url: image };
+        let data = res["dish"];
         dispatch({ type: dishesConstants.ADD_DISH, data });
       },
       (err) => {
         failure(err);
-        dispatch({ type: dishesConstants.GET_DISHES });
       }
     );
+  };
+}
+
+function updateDishPoints(allDishes, dishes, success, failure) {
+  return (dispatch) => {
+    dishService.updateDishPoints(
+      allDishes,
+      dishes,
+      (res) => {
+        success(res);
+        dispatch({ type: dishesConstants.UPDATE_POINTS, res });
+      },
+      (err) => {
+        failure(err);
+      }
+    );
+  };
+}
+
+function deleteDish(id, success, failure) {
+  return (dispatch) => {
+    dispatch({ type: dishesConstants.DELETE_DISH, id });
+    success();
   };
 }

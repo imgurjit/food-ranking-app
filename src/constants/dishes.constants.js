@@ -1,4 +1,6 @@
 export const dishesConstants = {
   GET_DISHES: "GET_DISHES",
-  ADD_DISH: "ADD_DISH"
+  ADD_DISH: "ADD_DISH",
+  UPDATE_POINTS: "UPDATE_POINTS",
+  DELETE_DISH: "DELETE_DISH",
 };

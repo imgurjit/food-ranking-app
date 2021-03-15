@@ -11,15 +11,15 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(8),
     display: "flex",
     flexDirection: "column",
-    alignItems: "center"
+    alignItems: "center",
   },
   form: {
     width: "100%",
-    marginTop: theme.spacing(1)
+    marginTop: theme.spacing(1),
   },
   submit: {
-    margin: theme.spacing(3, 0, 2)
-  }
+    margin: theme.spacing(3, 0, 2),
+  },
 }));
 
 function Login(props) {
@@ -29,17 +29,17 @@ function Login(props) {
   const [password, setPassword] = useState("");
 
   let handleSubmit = (event) => {
-    console.log("A name was submitted: ", event);
     event.preventDefault();
     if (username !== "" && password !== "") {
       props.login(
         username,
         password,
         (res) => {
-          console.log("sdkhsdfk --> ", res);
           props.history.push("/dashboard");
         },
-        (err) => {}
+        (err) => {
+          props.triggerSnackbar("Invalid username or password");
+        }
       );
     }
   };
@@ -47,7 +47,6 @@ function Login(props) {
   return (
     <Container component="main" maxWidth="xs">
       <div className={classes.paper}>
-        <div>dfgf{JSON.stringify(props.isAuthenticated)}</div>
         <form className={classes.form} noValidate onSubmit={handleSubmit}>
           <TextField
             variant="outlined"
@@ -71,7 +70,6 @@ function Login(props) {
             fullWidth
             value={password}
             onChange={(e) => {
-              console.log("A name was submitted: ", e.target.value);
               setPassword(e.target.value);
             }}
             name="password"
@@ -80,7 +78,13 @@ function Login(props) {
             id="password"
             autoComplete="current-password"
           />
-          <Button type="submit" fullWidth variant="contained" color="primary" className={classes.submit}>
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            color="primary"
+            className={classes.submit}
+          >
             Login
           </Button>
         </form>
@@ -97,7 +101,7 @@ function mapState(state) {
 
 const actionCreators = {
   login: userActions.login,
-  loginSuccessful: userActions.loginSuccessful
+  triggerSnackbar: userActions.triggerSnackbar,
 };
 
 const connectedLoginPage = connect(mapState, actionCreators)(Login);

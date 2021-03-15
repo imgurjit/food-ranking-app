@@ -5,7 +5,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import DishCard from "./DishCard";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
-import { CloudUpload, Delete, PhotoCamera } from "@material-ui/icons";
+import { CloudUpload, Delete } from "@material-ui/icons";
 import Grid from "@material-ui/core/Grid";
 import { IconButton } from "@material-ui/core";
 
@@ -14,28 +14,28 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(8),
     display: "flex",
     flexDirection: "column",
-    alignItems: "center"
+    alignItems: "center",
   },
   tabs: {
     width: "100%",
     background: "#80FFE8",
-    color: "black"
+    color: "black",
   },
   form: {
     width: "50%",
     margin: "10px",
     marginTop: theme.spacing(1),
     [theme.breakpoints.down("xs")]: {
-      width: "100%"
-    }
+      width: "100%",
+    },
   },
   input: {
-    display: "none"
+    display: "none",
   },
   image: {
     maxWidth: "200px",
-    minWidth: "200px"
-  }
+    minWidth: "200px",
+  },
 }));
 
 function UploadDish(props) {
@@ -46,45 +46,59 @@ function UploadDish(props) {
   const [canUploadImage, setCanUploadImage] = useState(false);
 
   let handleUploadClick = (event) => {
-    console.log(event);
     var file = event.target.files[0];
     const reader = new FileReader();
-    var url = reader.readAsDataURL(file);
+    reader.readAsDataURL(file);
 
     reader.onloadend = function (e) {
-      console.log(reader.result);
       setDishImage(reader.result);
-    }.bind(this);
+    };
   };
 
   let getUserDishes = () => {
     return props.dishes.map((element, i) => {
       if (element.submittedBy === sessionStorage.getItem("username"))
-        return <DishCard key={i} dish={element}></DishCard>;
+        return (
+          <DishCard
+            key={i}
+            dish={element}
+            isUpload={true}
+            deleteDish={() => {
+              props.deleteDish(
+                element["id"],
+                (res) => {},
+                (err) => {}
+              );
+            }}
+          ></DishCard>
+        );
+      else return "";
     });
   };
 
   let checkCanUpload = () => {
-    console.log(props.dishes.filter((el) => el.submittedBy === sessionStorage.getItem("username")).length >= 2);
-    return props.dishes.filter((el) => el.submittedBy === sessionStorage.getItem("username")).length >= 2;
+    return (
+      props.dishes.filter((el) => el.submittedBy === sessionStorage.getItem("username")).length >= 2
+    );
   };
 
   let submitDish = (event) => {
     event.preventDefault();
-    console.log("SUBMIT DISH CALLED");
-    props.addDish(
-      dishName,
-      dishDesc,
-      dishImage,
-      sessionStorage.getItem("username"),
-      (res) => {
-        setDishImage("");
-        setDishName("");
-        setDishDesc("");
-        setCanUploadImage(false);
-      },
-      (err) => {}
-    );
+
+    if (dishName !== "" && dishDesc !== "" && dishImage !== "")
+      props.addDish(
+        dishName,
+        dishDesc,
+        dishImage,
+        sessionStorage.getItem("username"),
+        (res) => {
+          setDishImage("");
+          setDishName("");
+          setDishDesc("");
+          setCanUploadImage(false);
+        },
+        (err) => {}
+      );
   };
 
   return (
@@ -117,7 +131,6 @@ function UploadDish(props) {
                 fullWidth
                 value={dishDesc}
                 onChange={(e) => {
-                  console.log("A name was submitted: ", e.target.value);
                   setDishDesc(e.target.value);
                 }}
                 name="dishDesc"
@@ -129,15 +142,16 @@ function UploadDish(props) {
               <Grid container justify="center" alignItems="center">
                 {dishImage ? (
                   <div style={{ display: "flex" }}>
-                    <img className={classes.image} src={dishImage}></img>
+                    <img className={classes.image} alt="Dish" src={dishImage}></img>
                     <div style={{ display: "flex", alignItems: "center" }}>
                       <IconButton
                         component="span"
                         className={classes.button}
-                        color="red"
+                        color="secondary"
                         onClick={() => {
                           setDishImage(undefined);
-                        }}>
+                        }}
+                      >
                         <Delete></Delete>
                       </IconButton>
                     </div>
@@ -157,16 +171,18 @@ function UploadDish(props) {
                         <CloudUpload></CloudUpload>
                       </IconButton>
                     </label>
-                    <div style={{ margin: "10px" }}>Or</div>
-                    <IconButton className={classes.button} color="primary">
-                      <PhotoCamera></PhotoCamera>
-                    </IconButton>
                   </div>
                 )}
               </Grid>
             </div>
             <div style={{ marginTop: "10px" }}>
-              <Button type="submit" variant="contained" color="primary" className={classes.submit}>
+              <Button
+                style={{ marginRight: "10px" }}
+                type="submit"
+                variant="contained"
+                color="primary"
+                className={classes.submit}
+              >
                 Submit
               </Button>
 
@@ -175,14 +191,18 @@ function UploadDish(props) {
                 color="primary"
                 className={classes.submit}
                 onClick={() => {
+                  setDishImage("");
+                  setDishName("");
+                  setDishDesc("");
                   setCanUploadImage(false);
-                }}>
+                }}
+              >
                 Cancel
               </Button>
             </div>
           </form>
         ) : (
-          <div style={{ marginTop: "10px" }}>
+          <div style={{ margin: "10px" }}>
             <Button
               variant="contained"
               color="primary"
@@ -190,13 +210,16 @@ function UploadDish(props) {
               className={classes.submit}
               onClick={() => {
                 setCanUploadImage(true);
-              }}>
+              }}
+            >
               Add Dish
             </Button>
           </div>
         )}
       </div>
-      <div style={{ display: "flex", justifyContent: "center", flexWrap: "wrap" }}>{getUserDishes()}</div>
+      <div style={{ display: "flex", justifyContent: "center", flexWrap: "wrap" }}>
+        {getUserDishes()}
+      </div>
     </>
   );
 }
@@ -208,8 +231,8 @@ function mapState(state) {
 }
 
 const actionCreators = {
-  getDishes: dishActions.getDishes,
-  addDish: dishActions.addDish
+  addDish: dishActions.addDish,
+  deleteDish: dishActions.deleteDish,
 };
 
 const connectedUploadDishPage = connect(mapState, actionCreators)(UploadDish);

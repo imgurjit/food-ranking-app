@@ -2,11 +2,10 @@ import { mockUsers } from "../services";
 
 export const userService = {
   login,
-  logout
+  logout,
 };
 
 function login(username, password, success, failure) {
-  console.log("Login called --> ", username, password, mockUsers);
   const found = mockUsers.some((el) => el.username === username && el.password === password);
   if (found) {
     success("User logged In Successfully");
@@ -15,4 +14,6 @@ function login(username, password, success, failure) {
   }
 }
 
-function logout(url, isConcurrent, success, failure) {}
+function logout(success, failure) {
+  success("User logged out Successfully");
+}
