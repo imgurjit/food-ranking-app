@@ -13,4 +13,4 @@ username: "user8", password: "user8@123"\
 username: "user9", password: "user9@123"\
 username: "user10", password: "user10@123"
 
-Apart from 10 static users 3 mock dishes added to demonstrate.
+Apart from 10 static users 3 mock dishes are added to demonstrate.
